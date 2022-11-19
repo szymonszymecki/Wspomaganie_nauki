@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "958977878128",
+    "project_id": "wspomaganie-nauki",
+    "storage_bucket": "wspomaganie-nauki.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:958977878128:android:f80b63a31cffca613bacb5",
+        "android_client_info": {
+          "package_name": "com.example.wspomaganie_nauki"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "958977878128-7i7tsssudv468sk51q2vpdtq2mbojaip.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-0ErFWMC44MN8JYTikQvBhf5gGykmUOc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "958977878128-7i7tsssudv468sk51q2vpdtq2mbojaip.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.wspomaganie_nauki.databinding.ActivityMainBinding
+import com.example.wspomaganie_nauki.deck_create.DeckCreateActivity
+import com.example.wspomaganie_nauki.deck_list.DeckListActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,7 +28,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnWelcomeNewDeck.setOnClickListener {
-
+            Intent(this, DeckCreateActivity::class.java).also {
+                it.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+                startActivity(it)
+            }
         }
     }
 }

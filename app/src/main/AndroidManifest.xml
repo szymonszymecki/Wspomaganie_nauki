@@ -9,8 +9,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Wspomaganie_nauki">
-        <activity android:name=".DeckListActivity"></activity>
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".deck_create.settings.ShowFlashcardListActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity android:name=".deck_create.DeckCreateActivity" />
+        <activity android:name=".deck_create.FlashcardCreateActivity" />
+        <activity android:name=".deck_list.DeckListActivity" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

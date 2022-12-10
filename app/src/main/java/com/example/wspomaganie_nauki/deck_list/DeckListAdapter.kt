@@ -16,7 +16,12 @@ class DeckListAdapter(
     inner class DeckListViewHolder(private val binding: ItemDeckListBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(deck: Deck) {
             binding.tvDeckTitle.text = deck.title
-            binding.tvDeckFlashcardsCount.text = deck.count.toString()
+
+            val frequencies = deck.flashcards.groupingBy { it.type }.eachCount()
+            binding.tvDeckFlashcardsToLearn.text = if (frequencies["TO_LEARN"] != null) frequencies["TO_LEARN"].toString() else "0"
+            binding.tvDeckFlashcardsToReview.text = if (frequencies["TO_REVIEW"] != null) frequencies["TO_REVIEW"].toString() else "0"
+            binding.tvDeckFlashcardsBurned.text = if (frequencies["BURNED"] != null) frequencies["BURNED"].toString() else "0"
+
         }
 
         init {

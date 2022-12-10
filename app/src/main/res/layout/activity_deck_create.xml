@@ -10,6 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/background_color"
         tools:context=".deck_create.DeckCreateActivity">
 
         <TextView
@@ -17,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Wpisz tytuł talii"
-            android:textColor="@color/black"
+            android:textColor="@color/text_color"
             android:textSize="48sp"
             app:layout_constraintBottom_toTopOf="@+id/etCreateDeckName"
             app:layout_constraintEnd_toEndOf="parent"
@@ -30,20 +31,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="48dp"
+            android:inputType="text"
             android:maxLines="1"
             android:minHeight="48dp"
+            android:textColor="@color/text_color"
             app:layout_constraintBottom_toTopOf="@+id/btnCreateDeckFinish"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvCreateDeckTitle" />
 
-        <Button
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btnCreateDeckFinish"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:text="Dodaj fiszki"
+            android:src="@drawable/ic_baseline_add_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

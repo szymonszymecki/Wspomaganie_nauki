@@ -1,6 +1,9 @@
-package com.example.wspomaganie_nauki.deck_create.settings
+package com.example.wspomaganie_nauki.flashcard_list
 
+import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.PopupMenu
 import android.widget.Toast
@@ -12,6 +15,7 @@ import com.example.wspomaganie_nauki.R
 import com.example.wspomaganie_nauki.data.Deck
 import com.example.wspomaganie_nauki.data.Flashcard
 import com.example.wspomaganie_nauki.databinding.ActivityShowFlashcardListBinding
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
@@ -38,11 +42,20 @@ class ShowFlashcardListActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        getFlashcards()
+        deckTitle = intent.getStringExtra("deck_title").toString()
+        setupRecyclerView()
+        flashcardListRealtimeUpdates()
     }
 
     private fun setupRecyclerView() {
         showFlashcardListAdapter = ShowFlashcardListAdapter(flashcardList)
+        Log.i("ADAPTER_INFO", showFlashcardListAdapter.toString())
+        showFlashcardListAdapter.onItemClick = {
+            val intent = Intent(this@ShowFlashcardListActivity, ShowFlashcardDetailsActivity::class.java)
+            intent.putExtra("deck_title", deckTitle)
+            intent.putExtra("flashcard_index", flashcardList.indexOf(it))
+            startActivity(intent)
+        }
         showFlashcardListAdapter.onItemLongClick = {
             val clickedViewIndex = flashcardList.indexOf(it)
             val clickedView = binding.root.rvFlashcardList.layoutManager?.findViewByPosition(clickedViewIndex)
@@ -51,7 +64,6 @@ class ShowFlashcardListActivity : AppCompatActivity() {
         binding.rvFlashcardList.apply {
             adapter = showFlashcardListAdapter
             layoutManager = LinearLayoutManager(this@ShowFlashcardListActivity)
-            addItemDecoration(DividerItemDecoration(this@ShowFlashcardListActivity, DividerItemDecoration.VERTICAL))
         }
     }
 
@@ -78,39 +90,38 @@ class ShowFlashcardListActivity : AppCompatActivity() {
         setNegativeButton("Nie") { _, _ ->}
     }
 
-    private fun getFlashcards() = CoroutineScope(Dispatchers.IO).launch {
-        try {
-            deckTitle = intent.getStringExtra("deck_title").toString()
-            val document = deckTitle.let { deckCollectionRef.document(it).get().await() }
-
-            val deck = document?.toObject<Deck>()
-            if (deck != null) {
-                withContext(Dispatchers.Main) {
-                    flashcardList = deck.flashcards
-                    setupRecyclerView()
-                }
+    @SuppressLint("NotifyDataSetChanged")
+    private fun flashcardListRealtimeUpdates() {
+        deckCollectionRef.document(deckTitle).addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
+            firebaseFirestoreException?.let {
+                Toast.makeText(this@ShowFlashcardListActivity, it.message, Toast.LENGTH_LONG).show()
             }
-        } catch (e: Exception) {
-            withContext(Dispatchers.Main) {
-                Toast.makeText(this@ShowFlashcardListActivity, e.message, Toast.LENGTH_LONG).show()
+            documentSnapshot?.let {
+                val deck = it.toObject<Deck>()
+                if (deck != null) {
+                    flashcardList.clear()
+                    for (flashcard in deck.flashcards) {
+                        flashcardList.add(flashcard)
+                    }
+                    showFlashcardListAdapter.notifyDataSetChanged()
+                }
             }
         }
     }
 
     private fun deleteFlashCard(flashcard: Flashcard) = CoroutineScope(Dispatchers.IO).launch {
-        val flashcardIndex = flashcardList.indexOf(flashcard)
         try {
-            flashcardList.remove(flashcard)
             deckCollectionRef.document(deckTitle).update(mapOf(
-                "flashcards" to flashcardList,
-                "count" to flashcardList.size
+                "flashcards" to FieldValue.arrayRemove(flashcard),
+                "count" to flashcardList.size - 1
             )).await()
 
+            val flashcardIndex = flashcardList.indexOf(flashcard)
+            flashcardList.remove(flashcard)
             withContext(Dispatchers.Main) {
                 showFlashcardListAdapter.notifyItemRemoved(flashcardIndex)
             }
         } catch (e: Exception) {
-            flashcardList.add(flashcardIndex, flashcard)
             withContext(Dispatchers.Main) {
                 Toast.makeText(this@ShowFlashcardListActivity, e.message, Toast.LENGTH_LONG).show()
             }

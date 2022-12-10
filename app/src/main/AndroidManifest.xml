@@ -10,7 +10,28 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Wspomaganie_nauki">
         <activity
-            android:name=".deck_create.settings.ShowFlashcardListActivity"
+            android:name=".review.FlashcardsReviewActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".deck_list.ShowDeckDetailsActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".flashcard_list.ShowFlashcardDetailsActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".flashcard_list.ShowFlashcardListActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

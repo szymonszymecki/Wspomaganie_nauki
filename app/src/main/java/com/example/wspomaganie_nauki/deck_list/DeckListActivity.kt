@@ -13,7 +13,6 @@ import com.example.wspomaganie_nauki.R
 import com.example.wspomaganie_nauki.data.Deck
 import com.example.wspomaganie_nauki.databinding.ActivityDeckListBinding
 import com.example.wspomaganie_nauki.deck_create.FlashcardCreateActivity
-import com.example.wspomaganie_nauki.deck_create.settings.ShowFlashcardListActivity
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
@@ -47,7 +46,7 @@ class DeckListActivity : AppCompatActivity() {
     private fun setupRecyclerView() {
         deckListAdapter = DeckListAdapter(deckList)
         deckListAdapter.onItemClick = {
-            val intent = Intent(this@DeckListActivity, ShowFlashcardListActivity::class.java)
+            val intent = Intent(this@DeckListActivity, ShowDeckDetailsActivity::class.java)
             intent.putExtra("deck_title", it.title)
             startActivity(intent)
         }
@@ -59,7 +58,6 @@ class DeckListActivity : AppCompatActivity() {
         binding.rvDeckList.apply {
             adapter = deckListAdapter
             layoutManager = LinearLayoutManager(this@DeckListActivity)
-            addItemDecoration(DividerItemDecoration(this@DeckListActivity, DividerItemDecoration.VERTICAL))
         }
     }
 
@@ -93,8 +91,8 @@ class DeckListActivity : AppCompatActivity() {
     }
 
     private fun deckListRealtimeUpdates() {
-        deckCollectionRef.addSnapshotListener { querySnapshot, error ->
-            error?.let {
+        deckCollectionRef.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+            firebaseFirestoreException?.let {
                 Toast.makeText(this@DeckListActivity, it.message, Toast.LENGTH_LONG).show()
             }
             querySnapshot?.let {

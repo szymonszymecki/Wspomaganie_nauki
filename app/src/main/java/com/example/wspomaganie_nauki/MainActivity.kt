@@ -17,17 +17,13 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        binding.btnWelcomeReviews.setOnClickListener {
-
-        }
-
-        binding.btnWelcomeDecks.setOnClickListener {
+        binding.cvWelcomeDecks.setOnClickListener {
             Intent(this, DeckListActivity::class.java).also {
                 startActivity(it)
             }
         }
 
-        binding.btnWelcomeNewDeck.setOnClickListener {
+        binding.cvWelcomeNewDeck.setOnClickListener {
             Intent(this, DeckCreateActivity::class.java).also {
                 it.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
                 startActivity(it)

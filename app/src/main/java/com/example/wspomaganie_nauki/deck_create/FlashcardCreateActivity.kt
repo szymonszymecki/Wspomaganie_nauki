@@ -9,8 +9,9 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.wspomaganie_nauki.R
 import com.example.wspomaganie_nauki.data.Deck
 import com.example.wspomaganie_nauki.data.Flashcard
+import com.example.wspomaganie_nauki.data.utils.TimeParser
 import com.example.wspomaganie_nauki.databinding.ActivityFlashcardCreateBinding
-import com.example.wspomaganie_nauki.deck_create.settings.ShowFlashcardListActivity
+import com.example.wspomaganie_nauki.flashcard_list.ShowFlashcardListActivity
 import com.example.wspomaganie_nauki.deck_list.DeckListActivity
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
@@ -44,7 +45,10 @@ class FlashcardCreateActivity : AppCompatActivity() {
             if (front.isEmpty() || back.isEmpty()) {
                 Toast.makeText(this, "Uzupełnij dane", Toast.LENGTH_LONG).show()
             } else if (deckTitle != null) {
-                addFlashcard(Flashcard(front, back))
+                val currentTime = TimeParser.getCurrentTimeToString()
+                addFlashcard(Flashcard(front=front, back=back, time=currentTime))
+                binding.etCreateFlashcardFront.text.clear()
+                binding.etCreateFlashcardBack.text.clear()
             }
         }
 

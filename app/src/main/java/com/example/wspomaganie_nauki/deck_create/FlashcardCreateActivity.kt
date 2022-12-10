@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.wspomaganie_nauki.R
 import com.example.wspomaganie_nauki.data.Deck
 import com.example.wspomaganie_nauki.data.Flashcard
+import com.example.wspomaganie_nauki.data.utils.AccountDataParser
 import com.example.wspomaganie_nauki.data.utils.TimeParser
 import com.example.wspomaganie_nauki.databinding.ActivityFlashcardCreateBinding
 import com.example.wspomaganie_nauki.flashcard_list.ShowFlashcardListActivity
@@ -83,14 +84,15 @@ class FlashcardCreateActivity : AppCompatActivity() {
 
     private fun addFlashcard(flashcard: Flashcard) = CoroutineScope(Dispatchers.IO).launch {
         try {
-            val document = deckTitle?.let { deckCollectionRef.document(it).get().await() }
+            val id = deckTitle?.let { AccountDataParser.getDeckID(it) }
+            val document = id?.let { deckCollectionRef.document(it).get().await() }
 
             val deck = document?.toObject<Deck>()
 
             if (deck?.flashcards?.contains(flashcard) == false) {
                 deck.flashcards.add(flashcard)
                 val deckMap = getDeckMap(deck)
-                deckCollectionRef.document(deck.title).set(
+                deckCollectionRef.document(id).set(
                     deckMap,
                     SetOptions.merge()
                 ).await()

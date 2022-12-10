@@ -1,7 +1,9 @@
 package com.example.wspomaganie_nauki.deck_list
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.PopupMenu
 import android.widget.Toast
@@ -11,6 +13,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.wspomaganie_nauki.R
 import com.example.wspomaganie_nauki.data.Deck
+import com.example.wspomaganie_nauki.data.utils.AccountDataParser
 import com.example.wspomaganie_nauki.databinding.ActivityDeckListBinding
 import com.example.wspomaganie_nauki.deck_create.FlashcardCreateActivity
 import com.google.firebase.firestore.DocumentChange
@@ -90,38 +93,31 @@ class DeckListActivity : AppCompatActivity() {
         setNegativeButton("Nie") { _, _ ->}
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun deckListRealtimeUpdates() {
         deckCollectionRef.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
             firebaseFirestoreException?.let {
                 Toast.makeText(this@DeckListActivity, it.message, Toast.LENGTH_LONG).show()
             }
             querySnapshot?.let {
-                for (documentChange in it.documentChanges) {
-                    val deck = documentChange.document.toObject<Deck>()
-                    when (documentChange.type) {
-                        DocumentChange.Type.ADDED -> {
+                deckList.clear()
+                for (document in it.documents) {
+                    if (AccountDataParser.getEmailFromID(document.id) == AccountDataParser.getEmail()) {
+                        val deck = document.toObject<Deck>()
+                        if (deck != null) {
                             deckList.add(deck)
-                            deckListAdapter.notifyItemInserted(documentChange.newIndex)
-                        }
-                        DocumentChange.Type.MODIFIED -> {
-                            val deckIndex = documentChange.newIndex
-                            deckList[deckIndex] = deck
-                            deckListAdapter.notifyItemChanged(deckIndex)
-                        }
-                        DocumentChange.Type.REMOVED -> {
-                            val deckIndex = documentChange.oldIndex
-                            deckList.remove(deck)
-                            deckListAdapter.notifyItemRemoved(deckIndex)
                         }
                     }
                 }
+                deckListAdapter.notifyDataSetChanged()
             }
         }
     }
 
     private fun deleteDeck(deck: Deck) = CoroutineScope(Dispatchers.IO).launch {
         try {
-            deckCollectionRef.document(deck.title).delete().await()
+            val id = AccountDataParser.getDeckID(deck.title)
+            deckCollectionRef.document(id).delete().await()
         } catch (e: Exception) {
             withContext(Dispatchers.Main) {
                 Toast.makeText(this@DeckListActivity, e.message, Toast.LENGTH_LONG).show()

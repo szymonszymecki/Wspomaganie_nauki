@@ -1,13 +1,13 @@
 package com.example.wspomaganie_nauki.deck_list
 
-import android.annotation.SuppressLint
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.example.wspomaganie_nauki.data.Deck
 import com.example.wspomaganie_nauki.data.Flashcard
 import com.example.wspomaganie_nauki.data.FlashcardType
+import com.example.wspomaganie_nauki.data.utils.AccountDataParser
 import com.example.wspomaganie_nauki.data.utils.TimeParser
 import com.example.wspomaganie_nauki.databinding.ActivityShowDeckDetailsBinding
 import com.example.wspomaganie_nauki.flashcard_list.ShowFlashcardListActivity
@@ -61,13 +61,13 @@ class ShowDeckDetailsActivity : AppCompatActivity() {
 
     private fun getReviewCount(flashcards: MutableList<Flashcard>) : Int {
         val currentTime = LocalDateTime.now()
-
         return flashcards.count { it.type != FlashcardType.BURNED.toString() &&
                 TimeParser.getTimeFromString(it.time).isBefore(currentTime) }
     }
 
     private fun deckDetailsRealtimeUpdates() {
-        deckCollectionRef.document(deckTitle).addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
+        val id = AccountDataParser.getDeckID(deckTitle)
+        deckCollectionRef.document(id).addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
             firebaseFirestoreException?.let {
                 Toast.makeText(this@ShowDeckDetailsActivity, it.message, Toast.LENGTH_LONG).show()
             }
@@ -98,14 +98,16 @@ class ShowDeckDetailsActivity : AppCompatActivity() {
             val newDeckTitle = binding.etDeckDetailsTitle.text.toString()
             if (newDeckTitle != deckTitle) {
 
-                val document = deckTitle?.let { deckCollectionRef.document(it).get().await() }
+                val id = deckTitle?.let { AccountDataParser.getDeckID(it) }
+                val document = id?.let { deckCollectionRef.document(it).get().await() }
                 val deck = document?.toObject<Deck>()
-                val newDocument = deckCollectionRef.document(newDeckTitle).get().await()
+                val newId = AccountDataParser.getDeckID(newDeckTitle)
+                val newDocument = deckCollectionRef.document(newId).get().await()
 
                 if (!newDocument.exists() && deck != null) {
                     deck.title = newDeckTitle
-                    deckCollectionRef.document(newDeckTitle).set(deck).await()
-                    deckCollectionRef.document(deckTitle).delete().await()
+                    deckCollectionRef.document(newId).set(deck).await()
+                    deckCollectionRef.document(id).delete().await()
                 } else {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(this@ShowDeckDetailsActivity, "Talia z podaną nazwą już istnieje", Toast.LENGTH_LONG).show()

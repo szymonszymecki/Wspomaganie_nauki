@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.wspomaganie_nauki.data.Deck
 import com.example.wspomaganie_nauki.data.Flashcard
 import com.example.wspomaganie_nauki.data.FlashcardType
+import com.example.wspomaganie_nauki.data.utils.AccountDataParser
 import com.example.wspomaganie_nauki.databinding.ActivityShowFlashcardDetailsBinding
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
@@ -42,7 +43,8 @@ class ShowFlashcardDetailsActivity : AppCompatActivity() {
 
     private fun getFlashcard(deckTitle: String?, flashcardIndex: Int) = CoroutineScope(Dispatchers.IO).launch {
         try {
-            val document = deckTitle?.let { deckCollectionRef.document(it).get().await() }
+            val id = deckTitle?.let { AccountDataParser.getDeckID(it) }
+            val document = id?.let { deckCollectionRef.document(it).get().await() }
             flashcardList = document?.toObject<Deck>()?.flashcards!!
             val flashcard = flashcardList[flashcardIndex]
             withContext(Dispatchers.Main) {
@@ -73,7 +75,8 @@ class ShowFlashcardDetailsActivity : AppCompatActivity() {
                 flashcardList[flashcardIndex].back = back
 
                 if (deckTitle != null) {
-                    deckCollectionRef.document(deckTitle).update(mapOf(
+                    val id = AccountDataParser.getDeckID(deckTitle)
+                    deckCollectionRef.document(id).update(mapOf(
                         "flashcards" to flashcardList
                     )).await()
                 }

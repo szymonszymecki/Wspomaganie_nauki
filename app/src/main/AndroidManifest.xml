@@ -11,38 +11,46 @@
         android:theme="@style/Theme.Wspomaganie_nauki">
         <activity
             android:name=".review.FlashcardsReviewActivity"
-            android:exported="false">
+            android:exported="false"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".deck_list.ShowDeckDetailsActivity"
-            android:exported="false">
+            android:exported="false"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".flashcard_list.ShowFlashcardDetailsActivity"
-            android:exported="false">
+            android:exported="false"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".flashcard_list.ShowFlashcardListActivity"
-            android:exported="false">
+            android:exported="false"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-        <activity android:name=".deck_create.DeckCreateActivity" />
-        <activity android:name=".deck_create.FlashcardCreateActivity" />
-        <activity android:name=".deck_list.DeckListActivity" />
+        <activity android:name=".deck_create.DeckCreateActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".deck_create.FlashcardCreateActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".deck_list.DeckListActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

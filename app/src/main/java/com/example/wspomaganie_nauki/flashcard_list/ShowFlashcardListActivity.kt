@@ -1,5 +1,6 @@
 package com.example.wspomaganie_nauki.flashcard_list
 
+import android.accounts.Account
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.wspomaganie_nauki.R
 import com.example.wspomaganie_nauki.data.Deck
 import com.example.wspomaganie_nauki.data.Flashcard
+import com.example.wspomaganie_nauki.data.utils.AccountDataParser
 import com.example.wspomaganie_nauki.databinding.ActivityShowFlashcardListBinding
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
@@ -92,7 +94,8 @@ class ShowFlashcardListActivity : AppCompatActivity() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun flashcardListRealtimeUpdates() {
-        deckCollectionRef.document(deckTitle).addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
+        val id = AccountDataParser.getDeckID(deckTitle)
+        deckCollectionRef.document(id).addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
             firebaseFirestoreException?.let {
                 Toast.makeText(this@ShowFlashcardListActivity, it.message, Toast.LENGTH_LONG).show()
             }
@@ -111,7 +114,8 @@ class ShowFlashcardListActivity : AppCompatActivity() {
 
     private fun deleteFlashCard(flashcard: Flashcard) = CoroutineScope(Dispatchers.IO).launch {
         try {
-            deckCollectionRef.document(deckTitle).update(mapOf(
+            val id = AccountDataParser.getDeckID(deckTitle)
+            deckCollectionRef.document(id).update(mapOf(
                 "flashcards" to FieldValue.arrayRemove(flashcard),
                 "count" to flashcardList.size - 1
             )).await()

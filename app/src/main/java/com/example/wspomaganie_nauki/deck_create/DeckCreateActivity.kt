@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.wspomaganie_nauki.data.Deck
+import com.example.wspomaganie_nauki.data.utils.AccountDataParser
 import com.example.wspomaganie_nauki.databinding.ActivityDeckCreateBinding
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -35,10 +36,11 @@ class DeckCreateActivity : AppCompatActivity() {
 
     private fun addDeck(deck: Deck) = CoroutineScope(Dispatchers.IO).launch {
         try {
-            val document = deckCollectionRef.document(deck.title).get().await()
+            val id = AccountDataParser.getDeckID(deck.title)
+            val document = deckCollectionRef.document(id).get().await()
 
             if (!document.exists()) {
-                deckCollectionRef.document(deck.title).set(deck).await()
+                deckCollectionRef.document(id).set(deck).await()
 
                 withContext(Dispatchers.Main) {
                     Toast.makeText(this@DeckCreateActivity, "Dodano pustą talię", Toast.LENGTH_LONG).show()

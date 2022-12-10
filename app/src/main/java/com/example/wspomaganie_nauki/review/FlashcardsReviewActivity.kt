@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.wspomaganie_nauki.data.Deck
 import com.example.wspomaganie_nauki.data.Flashcard
 import com.example.wspomaganie_nauki.data.FlashcardType
+import com.example.wspomaganie_nauki.data.utils.AccountDataParser
 import com.example.wspomaganie_nauki.data.utils.TimeParser
 import com.example.wspomaganie_nauki.databinding.ActivityFlashcardsReviewBinding
 import com.google.firebase.firestore.FieldValue
@@ -111,7 +112,8 @@ class FlashcardsReviewActivity : AppCompatActivity() {
 
     private fun getFlashcardListForReview(deckTitle: String?) = CoroutineScope(Dispatchers.IO).launch {
         try {
-            val document = deckTitle?.let { deckCollectionRef.document(it).get().await() }
+            val id = deckTitle?.let { AccountDataParser.getDeckID(it) }
+            val document = id?.let { deckCollectionRef.document(it).get().await() }
             val deck = document?.toObject<Deck>()
             flashcards = if (deck?.flashcards != null) deck.flashcards else mutableListOf()
 
@@ -128,7 +130,8 @@ class FlashcardsReviewActivity : AppCompatActivity() {
 
     private fun updateFlashcard(deckTitle: String?, grade: Int) = CoroutineScope(Dispatchers.IO).launch {
         try {
-            val document = deckTitle?.let { deckCollectionRef.document(it).get().await() }
+            val id = deckTitle?.let { AccountDataParser.getDeckID(it) }
+            val document = id?.let { deckCollectionRef.document(it).get().await() }
             val deck = document?.toObject<Deck>()
             val allFlashcards = if (deck?.flashcards != null) deck.flashcards else mutableListOf()
 
@@ -138,7 +141,8 @@ class FlashcardsReviewActivity : AppCompatActivity() {
             allFlashcards.add(flashcardIndex, newFlashcard)
 
             if (deckTitle != null) {
-                deckCollectionRef.document(deckTitle).update(mapOf(
+                val id = AccountDataParser.getDeckID(deckTitle)
+                deckCollectionRef.document(id).update(mapOf(
                     "flashcards" to allFlashcards,
                 )).await()
             }
